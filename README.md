@@ -74,4 +74,4 @@ python manage.py runserver
 This project uses `django-fernet-encrypted-fields`. Even a database administrator cannot view sensitive values without the `ENCRYPTION_KEY`. Ensure your `.env` file is never committed to version control.
 
 ---
-Built by Antigravity 🤖
+Built by Walker 🤖

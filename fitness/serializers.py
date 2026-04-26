@@ -26,8 +26,12 @@ class WorkoutSerializer(serializers.ModelSerializer):
         workout = Workout.objects.create(**validated_data)
         for exercise_data in exercises_data:
             sets_data = exercise_data.pop('sets', [])
+            # Remove 'workout' if it exists to avoid multiple values error
+            exercise_data.pop('workout', None)
             exercise = Exercise.objects.create(workout=workout, **exercise_data)
             for set_data in sets_data:
+                # Remove 'exercise' if it exists to avoid multiple values error
+                set_data.pop('exercise', None)
                 ExerciseSet.objects.create(exercise=exercise, **set_data)
         return workout
 

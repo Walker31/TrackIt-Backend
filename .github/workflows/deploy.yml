@@ -1,0 +1,57 @@
+name: Deploy TrackIt Backend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add Server to Known Hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to Server
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            set -e
+
+            # Adjust the path to your project directory on the server
+            cd ~/TrackIt-Backend
+
+            echo "Pull latest code..."
+            git pull origin main
+
+            echo "Activate venv..."
+            # Adjust the venv path if necessary
+            source venv/bin/activate
+
+            echo "Install dependencies..."
+            pip install -r requirements.txt
+
+            echo "Run migrations..."
+            python manage.py migrate --noinput
+
+            echo "Collect static files..."
+            python manage.py collectstatic --noinput
+
+            echo "Restart application service..."
+            # Replace 'trackit' with your actual systemd service name
+            sudo systemctl restart track
+
+            echo "Check service status..."
+            sudo systemctl status track --no-pager
+
+          EOF
