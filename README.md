@@ -1,4 +1,4 @@
-# TrackIt API 🚀
+# TrackIt API
 
 The secure, cloud-powered backend for the TrackIt mobile application. Built with Django and PostgreSQL, featuring field-level encryption and robust data isolation.
 
